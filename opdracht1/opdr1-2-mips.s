@@ -31,16 +31,16 @@ $L2:
 	lui	$6,%hi(B)						#load high part of B into reg 6
 	lui	$2,%hi(B+4)					#load high part of B+4
 	lui	$5,%hi(B+64)				#load high part of B+64
-	sw	$0,%lo(B)($6)				#store 0 in lower
-	addiu	$2,$2,%lo(B+4)
-	addiu	$5,$5,%lo(B+64)
+	sw	$0,%lo(B)($6)				#store 0 in B (B high + offset B low)
+	addiu	$2,$2,%lo(B+4)		#complete the load of B+4 in reg 2
+	addiu	$5,$5,%lo(B+64)		#complete the load of B+64 into reg 5
 $L3:
-	lw	$3,0($4)
-	addiu	$2,$2,4
-	addiu	$3,$3,95
-	sw	$3,-4($2)
-	bne	$2,$5,$L3
-	addiu	$4,$4,4
+	lw	$3,0($4)					#load the value at $4 (A)
+	addiu	$2,$2,4					#$2 += 4 (volgende element van B)	
+	addiu	$3,$3,95				#waarde van A element 0 + 95
+	sw	$3,-4($2)					#schrijf A element naar B[element]
+	bne	$2,$5,$L3					#branch not equal: als $2 niet $5 voer volgende uit en ga naar L3 top
+	addiu	$4,$4,4					#add 4 to reg 4
 
 	addiu	$6,$6,%lo(B)
 	lw	$4,60($6)

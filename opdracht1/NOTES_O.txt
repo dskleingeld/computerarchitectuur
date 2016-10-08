@@ -1,0 +1,24 @@
+opdracht 1, optimised code
+
+main:
+
+	rgl 20-21: 	load A_address into register 4
+	rgl 22-23: 	copy A_address to reg 3
+	rgl 23:			set i to 0
+	rgl 24: 		set reg 5 to 32
+	
+L2:
+	First for loop, (filling of array A)
+		rgl 26: 		set A[0] to i (zero for first run then ascending in multipes of 2)
+		rgl 27: 		i += 2
+		rgl 28: 		if i not 32, execute the next line and repeat L2 till here *
+		rgl 29: 		add 4 to address of A (reg 3), :jump to next element of A
+		
+	Done	
+		rgl 30:			load 
+
+
+*All branches have an architectural delay of one instruction. When a branch is
+taken, the instruction immediately following the branch instruction, in the branch
+delay slot, is executed before the branch to the target instruction takes place.
+source: "MIPS IV Instruction Set. Rev 3.2"

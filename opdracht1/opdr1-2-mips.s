@@ -24,14 +24,14 @@ main:
 	li	$5,32		# 0x20
 $L2:
 	sw	$2,0($3)
-	addiu	$2,$2,2
-	bne	$2,$5,$L2
-	addiu	$3,$3,4
+	addiu	$2,$2,2 	reg 2 = reg 2 + 2
+	bne	$2,$5,$L2		if reg 2 != reg 5 (=32) go to L2
+	addiu	$3,$3,4		
 
-	lui	$6,%hi(B)
-	lui	$2,%hi(B+4)
-	lui	$5,%hi(B+64)
-	sw	$0,%lo(B)($6)
+	lui	$6,%hi(B)						#load high part of B into reg 6
+	lui	$2,%hi(B+4)					#load high part of B+4
+	lui	$5,%hi(B+64)				#load high part of B+64
+	sw	$0,%lo(B)($6)				#store 0 in lower
 	addiu	$2,$2,%lo(B+4)
 	addiu	$5,$5,%lo(B+64)
 $L3:

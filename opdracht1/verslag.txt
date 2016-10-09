@@ -1,0 +1,203 @@
+Verslag CA opdracht 1
+David Kleingeld, s1432982
+
+
+Ik werkte tijdens het maken van comments bij de code met een appart file met notes
+per regel. Het is uiteindelijk veel overzichtelijker gebleken om de notes appart
+te hebben. Excuses, hierom staan de higher level comments in dit file.
+
+_________________
+Opgave 1
+
+1)
+main:
+rgl 24: reserveer 32 bit geheugen in de stack voor variablen
+
+rgl 28: set i = 0
+
+
+L2:
+First for loop evaluation:
+	rgl 50-52: sla in register 2 true of false (1 of 0) als i kleiner of niet dan 16
+	rgl 53: als i nog niet 16 is (dus reg 2= 1) ga naar code in L3
+
+First for loop done:
+	rgl 56: R2 = 95 (is C) en sla C op in bytes 20 tot 24
+	
+Start Second for loop:
+	
+	rgl 59 en 60: B[0] = 0
+	set i to 1
+	---> door naar L4
+	
+L3:
+	rgl 38: store counter i in reg4 en
+	rgl 40: R4 = i*4 (i*4 omdat intsize = 4)
+	
+	rgl 37 en 41: laad A in R2 (R2 = A)
+	
+	
+	rgl 35: R3 = i*2
+	rgl 43: at A+(i*4) in het geheugen sla op i*2
+	ookwel op A[n] met n van 0 tm 3 sla op een 4 bits integer met waarde i*2
+	
+	rgl 44, 46, 47: i++
+	
+	--> door volgens volgorde in mips.s file: door bovenaan L2: for loop evaluation
+	
+L4:
+	rgl 93, 94: als i < 16 voer L5 uit
+	
+L5:
+	rgl 68, 70, 72: subadress van element van A dat we willen: (i-1)*4
+	rgl 71, 73, 74: laad adress_A in $2 en voeg to het subadress van het element
+									dat we willen hebben. $2 bevat nu een pointer naar het geheugen
+									van het i-1e element van A
+	rgl 75, 76, 78: laad de waarde die staat in element i-1 van A en tel daar 95 
+									bij op. sla het resultaat op in $3
+	
+	rgl 79, 83:			laad B in $2
+	rgl 80, 82, 84: sla pointer naar i-e element van B op in $2
+	rgl 85: 				schrijf de waarde van het (i-1 e element van A) - 95 dat in
+								  register 3 staat naar het i-e element van B
+  
+  rgl 86, 88, 89: i++
+  
+L4 vervolg:
+	rgl 97, 98, 99: laad het adress van B, laad dan de 4 bytes die op plaats 60
+									in B staan naar register b. (laat het laaste element van B)
+	
+	rgl 102:				jump and link to print_roman
+	
+	rgl 106, 107, 108: restore register 31 and the frame poiner to the values 
+										 saved at the beginning of the programm
+	rgl 109, 110: 	clear 32 bytes of memory in the stack and jump to the code
+									in register 31		
+
+2)
+Statisch: 75
+Dynamish: 748
+
+Loads: 159 dynamisch, 13 statisch
+Stores: 68 dynamisch, 10 statisch
+
+3
+main:
+
+	rgl 20-21: 	load A_address into register 4
+	rgl 22-23: 	copy A_address to reg 3
+	rgl 23:			set counter for first for loop (lets call it 'i') to 0
+	rgl 24: 		set reg 5 to 32
+	
+L2:
+	First for loop, (filling of array A)
+		rgl 26: 		set A[0] to i (zero for first run then ascending in multipes of 2)
+		rgl 27: 		i += 2
+		rgl 28: 		if i not 32, execute the next line and repeat L2 till here *
+		rgl 29: 		add 4 to address of A (reg 3), :jump to next element of A
+		
+	Done, preperation of Second for loop	
+		rgl 31,34:		load het adress of array B in 2 steps and write 0 to it: B[0] = 0 
+		rgl 32,35:		load (the adress of array B) + 4 into reg 2 for later use
+									this is the pointer to the second element of the array.
+		rgl 33,36:		in the same way load the pointer to the last element of the
+									array B
+
+L3:
+	Second for loop (filling array B)
+		rgl 38:		 load a value from array A, first loop this is A[0]
+		rgl 39: 	 set reg2 to reg2+4. This is also the loop counter. And also loops 
+							 over array B. The loop ends when this is the pointer to the last element of B. 
+		
+		rgl 40-41: take the value out of the A array we loaded (first loop A[0])
+							 add 95 and store it at the loop counter -4. Remember the loop
+							 counter is an adress of B. The adress is B[1] the first loop.	
+
+		rgl 42-43: if we havent just filled the last element of B go to the next 
+							 loop, before starting* the next loop update the pointer to 
+							 the element of A to point to the next element in A.
+
+	print roman B[N-1]
+		rgl 45-46: Load the last element of B [N-1] (the element at byte 60) and
+							 store it in register 4. 
+		
+		rgl 47-48: Reserve 24 bytes on the stack and store reg 31 in the last 4 bytes
+	  
+	  rgl 49-50: Jump and link print-roman, execute nothing before doing that
+	  
+	cleanup
+		rgl 52-53: load register 31 back from the stack, set register 2 to zero
+		rgl 54,55: Jump to the adress in 31, while jumping unreserve/freeup the
+							 reserved space on the stack	
+
+	  	
+*All branches have an architectural delay of one instruction. When a branch is
+taken, the instruction immediately following the branch instruction, in the branch
+delay slot, is executed before the branch to the target instruction takes place.
+source: "MIPS IV Instruction Set. Rev 3.2")
+
+4)
+Op te merken is dat de compiler bij optimalising meer registers gebruikt en veel
+minder loads en stores. Ook word er na elke jump of branch nog een instructie 
+uitgevoerd zodat de tijd die het jumpen/branchen kost niet verspild word.
+
+Statisch: 31
+Dynamisch: 175
+Loads (stat,dyn): (3,17)
+Stores (stat, dyn): (4,33)
+_________________
+Opgave 2
+1)
+
+	movq    %rdi, -24(%rbp) # Pointer naar begin van een array (A) opslaan in stack (movq: move quad)
+	movq    %rsi, -32(%rbp) # Pointer naar begin van een ANDERE array (B) opslaan in stack
+	movl    %edx, -36(%rbp)	#	copy 4 bytes from edx to bytes -36 to -32 in the stack 
+	movl    $0, -8(%rbp)		# set bytes -8 to -4 to 0, totaal
+	movl    $0, -4(%rbp)		#	set bytes -4 to 0  to 0, counter i
+	jmp     .L2							# continue at L2 
+.L3:
+	movl    -4(%rbp), %eax	# set %eax to i
+	cltq										# promote eax int to int64, now called %rax ipv %eax
+	salq    $2, %rax				# left shift with 2 bytes, aka rax*4: i*4
+	addq    -24(%rbp), %rax	# add the pointer to array A to rax, rax is nu poiner to element i uit A
+	movl    (%rax), %edx		# element dat staat op plaats i in A opslaan in %edx
+	movl    -4(%rbp), %eax	# %eax is weer i
+	cltq										# eax weer int64
+	salq    $2, %rax				# nieuwe int 64 %eax called %rax weer *4
+	addq    -32(%rbp), %rax	# add pointer to B to %rax, is nu pointer naar element i uit B
+	movl    (%rax), %eax		# sla element i uit B op in eax
+	imull   %edx, %eax			# doe A[i]*B[i]
+	addl    %eax, -8(%rbp)	# voeg resultaat toe bij totaal
+	addl    $1, -4(%rbp)		# i++
+.L2:
+	movl    -4(%rbp), %eax	# set %eax to i
+	cmpl    -36(%rbp), %eax	# compare register eax to the 3e argument (length array) we got at the start
+	jl      .L3							# jump to .L3 als 3e argumement (length array) > i
+	movl    -8(%rbp), %eax	# stop het totaal dat nu af is in het return register %eax
+	popq    %rbp						# pop top of stack. 
+	
+2) 
+Hier word dus het inproduct van twee vectoren berekent. De input is een pointer naar
+waar de twee vectoren staan en de lengte van deze. De vectoren worden gerepresenteerd 
+als arrays en indien de lengte die opgegeven word lager is dan de lengte van de vectoren
+word het improduct berekent van de slice van de vectoren met die lengte. Indien een lengte
+korter dan de vectoren ingevoerd is word er random data vanuit het geheugen meegenomen.
+
+3)
+Er worden 16 dynamische instructies in de loop uitgevoerd, in totaal 8 daarbuiten.
+Het totaal is dus 8+16*N met N het derde argument van de functie ookwel hoe vaak de loop
+uitgevoerd word
+
+4)
+													MIPS						x86_64
+Memory loads            |lw              |movX *
+Memory stores           |sw              |movX *
+Optellen                |addiu, addu     |addX *
+Shifts                  |sll, srl        |sal, sar
+Unconditional jump      |j, jal          |jmp
+Conditional jump        |beq, bne        |jl, jg
+
+*Note: X is here b,s,w,l,q,t depending if a byte, short, word, long, quad or ten
+(respectivly 8, 16, 32, 64 or 80 bits) are being loaded/stored/added. There is 
+also some funny stuff going on between integers and floating points in x86_64 
+that I think falls ouside of the scope of this assigment.

@@ -1,0 +1,67 @@
+opdracht 1
+
+main:
+rgl 24: reserveer 32 bit geheugen in de stack voor variablen
+
+rgl 28: set i = 0
+
+
+L2:
+First for loop evaluation:
+	rgl 50-52: sla in register 2 true of false (1 of 0) als i kleiner of niet dan 16
+	rgl 53: als i nog niet 16 is (dus reg 2= 1) ga naar code in L3
+
+First for loop done:
+	rgl 56: R2 = 95 (is C) en sla C op in bytes 20 tot 24
+	
+Start Second for loop:
+	
+	rgl 59 en 60: B[0] = 0
+	set i to 1
+	---> door naar L4
+	
+L3:
+	rgl 38: store counter i in reg4 en
+	rgl 40: R4 = i*4 (i*4 omdat intsize = 4)
+	
+	rgl 37 en 41: laad A in R2 (R2 = A)
+	
+	
+	rgl 35: R3 = i*2
+	rgl 43: at A+(i*4) in het geheugen sla op i*2
+	ookwel op A[n] met n van 0 tm 3 sla op een 4 bits integer met waarde i*2
+	
+	rgl 44, 46, 47: i++
+	
+	--> door volgens volgorde in mips.s file: door bovenaan L2: for loop evaluation
+	
+L4:
+	rgl 93, 94: als i < 16 voer L5 uit
+	
+L5:
+	rgl 68, 70, 72: subadress van element van A dat we willen: (i-1)*4
+	rgl 71, 73, 74: laad adress_A in $2 en voeg to het subadress van het element
+									dat we willen hebben. $2 bevat nu een pointer naar het geheugen
+									van het i-1e element van A
+	rgl 75, 76, 78: laad de waarde die staat in element i-1 van A en tel daar 95 
+									bij op. sla het resultaat op in $3
+	
+	rgl 79, 83:			laad B in $2
+	rgl 80, 82, 84: sla pointer naar i-e element van B op in $2
+	rgl 85: 				schrijf de waarde van het (i-1 e element van A) - 95 dat in
+								  register 3 staat naar het i-e element van B
+  
+  rgl 86, 88, 89: i++
+  
+L4 vervolg:
+	rgl 97, 98, 99: laad het adress van B, laad dan de 4 bytes die op plaats 60
+									in B staan naar register b. (laat het laaste element van B)
+	
+	rgl 102:				jump and link to print_roman
+	
+	rgl 106, 107, 108: restore register 31 and the frame poiner to the values 
+										 saved at the beginning of the programm
+	rgl 109, 110: 	clear 32 bytes of memory in the stack and jump to the code
+									in register 31									 
+  
+	

@@ -39,7 +39,7 @@ ELFFile::~ELFFile()
 bool
 ELFFile::load(const std::string &filename)
 {
-  fd = open(filename.c_str(), O_RDONLY);
+  fd = open(filename.c_str(), O_RDONLY);//open for reading only
   if (fd < 0)
     return false;
 
@@ -51,6 +51,7 @@ ELFFile::load(const std::string &filename)
     }
 
   programSize = statbuf.st_size;
+  //map opend file to memory
   mapAddr = mmap(NULL, programSize, PROT_READ, MAP_PRIVATE, fd, 0);
   if (mapAddr == MAP_FAILED)
     {

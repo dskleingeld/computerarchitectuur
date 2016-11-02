@@ -78,6 +78,7 @@ void
 Processor::instructionFetch(void)
 {
   /* TODO: implement */
+  mapAddr[PC]
 }
 
 /* Returns whether jump has already occurred during this step and further

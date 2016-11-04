@@ -77,8 +77,7 @@ Processor::run(void)
 void
 Processor::instructionFetch(void)
 {
-  /* TODO: implement */
-  instruction = mapAddr[PC]
+  instruction = bus.readWord(PC);
 }
 
 /* Returns whether jump has already occurred during this step and further

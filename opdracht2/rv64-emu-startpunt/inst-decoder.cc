@@ -6,7 +6,7 @@
  */
 
 #include "inst-decoder.h"
-
+#include <iostream>
 #include <functional>
 #include <map>
 
@@ -23,9 +23,13 @@ selectBits(uint8_t start, uint8_t stop, const uint32_t instruction){
 //
   
   uint32_t selection; 
+  int mask;
   
   selection = instruction >> start; //shift bits we want to the lowest position
-  selection = selection & (stop-start); //take only the lowest bits
+  //create a mask by shifting ~0 (is all 1) the number of bits we want to the 
+  //left and then inverting so we get all 0 everywhere except the part we want to keep
+  mask = ~(~0 << (stop-start+1));      //(~ is the bitwise NOT operator)
+  selection = selection & mask;     //take only the lowest bits
 
   return selection;
 }
@@ -34,11 +38,11 @@ selectBits(uint8_t start, uint8_t stop, const uint32_t instruction){
 void
 decodeRtype(const uint32_t instruction, DecodedInstruction decoded)
 {
-  decoded.rd = selectBits(7, 11, instruction)
-  decoded.funct3 = selectBits(12, 14, instruction)
-  decoded.rs1 = selectBits(15, 19, instruction)
-  decoded.rs2 = selectBits(20, 24, instruction)
-  decoded.funct7 = selectBits(25, 31, instruction)
+  decoded.rd = selectBits(7, 11, instruction);
+  decoded.funct3 = selectBits(12, 14, instruction);
+  decoded.rs1 = selectBits(15, 19, instruction);
+  decoded.rs2 = selectBits(20, 24, instruction);
+  decoded.funct7 = selectBits(25, 31, instruction);
 }
 
 
@@ -51,12 +55,14 @@ InstructionDecoder::decodeInstruction(const uint32_t instruction)
   /* TODO: decode "instruction" and write the result to the variable
    * "decoded" (of type DecodedInstruction).
    */
+  int func3;
   DecodedInstruction decoded;
   
-  decoded.opcode = selectBits(0,6);
+  decoded.opcode = selectBits(0,6, instruction);
+  std::cout << +decoded.opcode;
   
   //decode the different types
-  switch decoded.opcode{
+  switch (decoded.opcode){
     case 0b0010011://R-type
       decodeRtype(instruction, decoded);
       if (decoded.funct3 == 0){
@@ -64,18 +70,23 @@ InstructionDecoder::decodeInstruction(const uint32_t instruction)
           decoded.ctrl = INT;
         }
       }
+      break;
     case 0b0111011://R-type
       decodeRtype(instruction, decoded);
+      break;
     case 0b0011011://R-type
-      func3 = selectBits(12,14);
+      func3 = selectBits(12,14, instruction);
       if (func3 != 000){
         decodeRtype(instruction, decoded);
       }
       else{
         //TODO
       }
+      break;
     default:
-      std::cout << "unsupported opcode\n";    
+      std::cout << " ";
+//      std::cout << "unsupported opcode\n";    
+      break;
   }                
 }
 

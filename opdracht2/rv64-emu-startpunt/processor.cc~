@@ -77,7 +77,9 @@ Processor::run(void)
 void
 Processor::instructionFetch(void)
 {
-  /* TODO: implement */
+  instruction = bus.readWord(PC);
+  std::cout << "programm counter: "; +PC;
+  PC += 4;
   
 }
 
@@ -92,6 +94,9 @@ Processor::instructionDecode(void)
   std::cerr << decoder.getDecodedInstruction() << std::endl;
 #endif /* INSTR_DUMP */
 
+	//set alu control signal
+	alu.ctrl = getAluCtrl();
+  
   /* TODO: implement remaining logic to set up the ALU (set A, B and
    * other necessary control signals).
    */

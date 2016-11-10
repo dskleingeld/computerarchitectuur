@@ -27,7 +27,8 @@ class ALU
     /* TODO: add methods to set opcode, function code and other information
      * necessary to identify the operation to execute on the ALU.
      */
-
+		AluControl ctrl;		
+		
     void execute();
 
   private:

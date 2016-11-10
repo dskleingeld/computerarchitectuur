@@ -14,7 +14,7 @@
 #include <cstdint>
 
 /*add enums and constants necessary for your instruction decoder */
-enum ALU { INT, FLOAT, DIV };
+enum aluControl { INT, FLOAT, DIV, NOP};
 
 
 /* Exception that should be thrown when an illegal instruction
@@ -45,7 +45,7 @@ struct DecodedInstruction
    
   uint32_t imm;
   
-  aluControl ctrl;
+  AluControl ctrl;
   /* TODO: fill with data instruction data: opcode, register numbers, etc... */
 };
 
@@ -58,7 +58,8 @@ class InstructionDecoder
   public:
     void                decodeInstruction(const uint32_t instruction);
 
-    DecodedInstruction  getDecodedInstruction(void) const;
+    DecodedInstruction  getDecodedInstruction(void) const;	
+		AluControl					getAluCtrl(void) const;
 
     /* TODO: add methods that the processor class can use to obtain
      * the necessary data from the decoded instruction.
@@ -68,7 +69,5 @@ class InstructionDecoder
     DecodedInstruction decoded;
 };
 
-/* List of different opcodes as constants */
-const uint8_t OPCODE_ADDW = 0b0111011;
 
 #endif /* __INST_DECODER_H__ */

@@ -12,4 +12,19 @@ void
 ALU::execute(void)
 {
   /* TODO: add code to perform operation set on the ALU */
+  switch (ctrl){
+  	case INT:
+  		result = A+B;
+  		break;
+		case FLOAT:
+  		result = A+B;
+			break;
+		case DIV:
+  		result = A/B;
+			break;
+		case NOP:
+			break;
+		default:
+			break;
+	}		
 }

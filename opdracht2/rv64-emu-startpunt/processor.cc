@@ -78,6 +78,9 @@ void
 Processor::instructionFetch(void)
 {
   instruction = bus.readWord(PC);
+  std::cout << "programm counter: "; +PC;
+  PC += 4;
+  
 }
 
 /* Returns whether jump has already occurred during this step and further
@@ -91,6 +94,9 @@ Processor::instructionDecode(void)
   std::cerr << decoder.getDecodedInstruction() << std::endl;
 #endif /* INSTR_DUMP */
 
+	//set alu control signal
+	alu.ctrl = decoder.getAluCtrl();
+  
   /* TODO: implement remaining logic to set up the ALU (set A, B and
    * other necessary control signals).
    */

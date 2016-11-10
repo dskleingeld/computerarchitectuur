@@ -52,14 +52,11 @@ decodeRtype(const uint32_t instruction, DecodedInstruction decoded)
 void
 InstructionDecoder::decodeInstruction(const uint32_t instruction)
 {
-  /* TODO: decode "instruction" and write the result to the variable
-   * "decoded" (of type DecodedInstruction).
-   */
   int func3;
   DecodedInstruction decoded;
   
   decoded.opcode = selectBits(0,6, instruction);
-  std::cout << +decoded.opcode;
+  std::cout << "decoded opcode: "<< +decoded.opcode << "\n";
   
   //decode the different types
   switch (decoded.opcode){
@@ -96,5 +93,10 @@ InstructionDecoder::getDecodedInstruction(void) const
   return decoded;
 }
 
+AluControl
+InstructionDecoder::getAluCtrl(void) const
+{
+	return decoded.ctrl;
+}
 
 /* TODO: add implementations of member functions of InstructionDecoder */

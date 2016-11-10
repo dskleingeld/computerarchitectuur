@@ -8,8 +8,6 @@
 #ifndef __INST_DECODER_H__
 #define __INST_DECODER_H__
 
-#include "reg-file.h"
-
 #include <stdexcept>
 #include <cstdint>
 
@@ -60,13 +58,18 @@ class InstructionDecoder
 
     DecodedInstruction  getDecodedInstruction(void) const;	
 		AluControl					getAluCtrl(void) const;
+		RegValue						getA() {return A;}
+		RegValue						getB() {return B;}
 
     /* TODO: add methods that the processor class can use to obtain
      * the necessary data from the decoded instruction.
      */
-
   private:
     DecodedInstruction decoded;
+    RegValue A;
+		RegValue B;
+
+		void decodeRtype(const uint32_t instruction);
 };
 
 

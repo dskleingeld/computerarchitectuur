@@ -14,7 +14,7 @@
 #include <cstdint>
 
 /*add enums and constants necessary for your instruction decoder */
-enum aluControl { INT, FLOAT, DIV, NOP};
+enum AluControl { INT, FLOAT, DIV, NOP};
 
 
 /* Exception that should be thrown when an illegal instruction
@@ -60,13 +60,18 @@ class InstructionDecoder
 
     DecodedInstruction  getDecodedInstruction(void) const;	
 		AluControl					getAluCtrl(void) const;
+		RegValue						getA() {return A;}
+		RegValue						getB() {return B;}
 
     /* TODO: add methods that the processor class can use to obtain
      * the necessary data from the decoded instruction.
      */
-
   private:
     DecodedInstruction decoded;
+    RegValue A;
+		RegValue B;
+
+		void decodeRtype(const uint32_t instruction);
 };
 
 

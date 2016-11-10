@@ -96,7 +96,8 @@ Processor::instructionDecode(void)
 
 	//set alu control signal
 	alu.ctrl = decoder.getAluCtrl();
-  
+	alu.setA(decoder.A);
+	alu.setB(decoder.B);  
   /* TODO: implement remaining logic to set up the ALU (set A, B and
    * other necessary control signals).
    */
@@ -131,6 +132,7 @@ Processor::memory(void)
    * obtained using alu.getResult(). For memory-operations, this
    * ALU result is the effective memory address.
    */
+   alu.getResult()
 }
 
 void

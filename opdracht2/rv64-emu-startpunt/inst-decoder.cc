@@ -36,13 +36,17 @@ selectBits(uint8_t start, uint8_t stop, const uint32_t instruction){
 
 /* decode an Rtype instruction */
 void
-decodeRtype(const uint32_t instruction, DecodedInstruction decoded)
+InstructionDecoder::decodeRtype(const uint32_t instruction)
 {
-  decoded.rd = selectBits(7, 11, instruction);
-  decoded.funct3 = selectBits(12, 14, instruction);
-  decoded.rs1 = selectBits(15, 19, instruction);
+  decoded.rd = selectBits(7, 11, instruction);			//target register
+  decoded.funct3 = selectBits(12, 14, instruction);	
+  decoded.rs1 = selectBits(15, 19, instruction);		
   decoded.rs2 = selectBits(20, 24, instruction);
   decoded.funct7 = selectBits(25, 31, instruction);
+
+	//get alu A and B from reg file
+	A = readRegister(decoded.rs1);
+	B = readRegister(decoded.rs2);
 }
 
 

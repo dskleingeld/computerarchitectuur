@@ -9,7 +9,7 @@
 #define __PROCESSOR_H__
 
 #include "arch.h"
-
+#include "reg-file.h"
 #include "elf-file.h"
 #include "inst-decoder.h"
 #include "alu.h"

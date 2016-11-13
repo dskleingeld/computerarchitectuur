@@ -14,7 +14,7 @@
 #include <cstdint>
 
 /*add enums and constants necessary for your instruction decoder */
-enum ALU { INT, FLOAT, DIV };
+enum aluControl { INT, FLOAT, DIV };
 
 
 /* Exception that should be thrown when an illegal instruction
@@ -65,7 +65,9 @@ class InstructionDecoder
      */
 
   private:
-    DecodedInstruction decoded;
+    DecodedInstruction decoded(void) const;
+    uint8_t decoder.getAdressA(void) const;
+    uint8_t decoder.getAdressB(void) const;
 };
 
 /* List of different opcodes as constants */

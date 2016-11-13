@@ -96,5 +96,15 @@ InstructionDecoder::getDecodedInstruction(void) const
   return decoded;
 }
 
+uint8_t 
+InstructionDecoder::getAdressA(void) const
+{
+  return decoded.rs1;
+}
 
+uint8_t 
+InstructionDecoder::getAdressA(void) const
+{
+  return decoded.rs2;
+}
 /* TODO: add implementations of member functions of InstructionDecoder */

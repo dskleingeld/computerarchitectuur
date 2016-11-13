@@ -65,7 +65,9 @@ class InstructionDecoder
      */
 
   private:
-    DecodedInstruction decoded;
+    DecodedInstruction decoded(void) const;
+    uint8_t getAdressA(void) const;
+    uint8_t getAdressB(void) const;
 };
 
 /* List of different opcodes as constants */

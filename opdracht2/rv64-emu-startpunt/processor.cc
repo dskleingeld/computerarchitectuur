@@ -90,10 +90,10 @@ Processor::instructionDecode(void)
 #ifdef INSTR_DUMP
   std::cerr << decoder.getDecodedInstruction() << std::endl;
 #endif /* INSTR_DUMP */
-
-  /* TODO: implement remaining logic to set up the ALU (set A, B and
-   * other necessary control signals).
-   */
+  
+  //(set A, B and * other necessary control signals).
+  decoder.getAdressA()
+  decoder.getAdressB()
 
   return false;
 }

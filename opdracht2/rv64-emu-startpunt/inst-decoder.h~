@@ -8,13 +8,12 @@
 #ifndef __INST_DECODER_H__
 #define __INST_DECODER_H__
 
-#include "reg-file.h"
-
 #include <stdexcept>
 #include <cstdint>
+#include "reg-file.h" //added
 
 /*add enums and constants necessary for your instruction decoder */
-enum aluControl { INT, FLOAT, DIV };
+enum AluControl { INT, FLOAT, DIV, NOP};
 
 
 /* Exception that should be thrown when an illegal instruction
@@ -45,7 +44,7 @@ struct DecodedInstruction
    
   uint32_t imm;
   
-  aluControl ctrl;
+  AluControl ctrl;
   /* TODO: fill with data instruction data: opcode, register numbers, etc... */
 };
 
@@ -58,19 +57,19 @@ class InstructionDecoder
   public:
     void                decodeInstruction(const uint32_t instruction);
 
-    DecodedInstruction  getDecodedInstruction(void) const;
-
+    DecodedInstruction  getDecodedInstruction(void) const;	
+		AluControl					getAluCtrl(void) const;
+    uint8_t             getAdressA() {return decoded.rs1;}
+    uint8_t             getAdressA() {return decoded.rs2;}
+    
     /* TODO: add methods that the processor class can use to obtain
      * the necessary data from the decoded instruction.
      */
+  private:    
+    DecodedInstruction decoded;
 
-  private:
-    DecodedInstruction decoded(void) const;
-    uint8_t decoder.getAdressA(void) const;
-    uint8_t decoder.getAdressB(void) const;
+		void decodeRtype(const uint32_t instruction);
 };
 
-/* List of different opcodes as constants */
-const uint8_t OPCODE_ADDW = 0b0111011;
 
 #endif /* __INST_DECODER_H__ */

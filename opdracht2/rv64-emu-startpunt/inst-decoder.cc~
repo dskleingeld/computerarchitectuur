@@ -10,6 +10,7 @@
 #include <functional>
 #include <map>
 
+
 /* TODO: add your instruction decoder */
 
 /*
@@ -36,11 +37,11 @@ selectBits(uint8_t start, uint8_t stop, const uint32_t instruction){
 
 /* decode an Rtype instruction */
 void
-decodeRtype(const uint32_t instruction, DecodedInstruction decoded)
+InstructionDecoder::decodeRtype(const uint32_t instruction)
 {
-  decoded.rd = selectBits(7, 11, instruction);
-  decoded.funct3 = selectBits(12, 14, instruction);
-  decoded.rs1 = selectBits(15, 19, instruction);
+  decoded.rd = selectBits(7, 11, instruction);			//target register
+  decoded.funct3 = selectBits(12, 14, instruction);	
+  decoded.rs1 = selectBits(15, 19, instruction);		
   decoded.rs2 = selectBits(20, 24, instruction);
   decoded.funct7 = selectBits(25, 31, instruction);
 }
@@ -52,32 +53,31 @@ decodeRtype(const uint32_t instruction, DecodedInstruction decoded)
 void
 InstructionDecoder::decodeInstruction(const uint32_t instruction)
 {
-  /* TODO: decode "instruction" and write the result to the variable
-   * "decoded" (of type DecodedInstruction).
-   */
   int func3;
   DecodedInstruction decoded;
   
   decoded.opcode = selectBits(0,6, instruction);
-  std::cout << +decoded.opcode;
+  std::cout << "decoded opcode: "<< +decoded.opcode << "\n";
   
   //decode the different types
   switch (decoded.opcode){
     case 0b0010011://R-type
-      decodeRtype(instruction, decoded);
+      decodeRtype(instruction);
       if (decoded.funct3 == 0){
+        std::cout << "here";
         if (decoded.funct7 == 0){//ADDW
+          std::cout << "setting decoder";
           decoded.ctrl = INT;
         }
       }
       break;
     case 0b0111011://R-type
-      decodeRtype(instruction, decoded);
+      decodeRtype(instruction);
       break;
     case 0b0011011://R-type
       func3 = selectBits(12,14, instruction);
       if (func3 != 000){
-        decodeRtype(instruction, decoded);
+        decodeRtype(instruction);
       }
       else{
         //TODO
@@ -96,15 +96,11 @@ InstructionDecoder::getDecodedInstruction(void) const
   return decoded;
 }
 
-uint8_t 
-InstructionDecoder::decoder.getAdressA(void) const
+AluControl
+InstructionDecoder::getAluCtrl(void) const
 {
-  return decoded.rs1;
+	return decoded.ctrl;
 }
 
-uint8_t 
-InstructionDecoder::decoder.getAdressA(void) const
-{
-  return decoded.rs2;
-}
+
 /* TODO: add implementations of member functions of InstructionDecoder */

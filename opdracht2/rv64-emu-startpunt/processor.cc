@@ -78,6 +78,9 @@ void
 Processor::instructionFetch(void)
 {
   instruction = bus.readWord(PC);
+  std::cout << "PC: "<< +PC <<", ";
+  PC += 4;
+  
 }
 
 /* Returns whether jump has already occurred during this step and further
@@ -86,14 +89,24 @@ Processor::instructionFetch(void)
 bool
 Processor::instructionDecode(void)
 {
+  RegValue A;
+  RegValue B;
+  
   decoder.decodeInstruction(instruction);
 #ifdef INSTR_DUMP
   std::cerr << decoder.getDecodedInstruction() << std::endl;
 #endif /* INSTR_DUMP */
   
+  A = regfile.readRegister(decoder.getAdressA());
+  B = regfile.readRegister(decoder.getAdressB());
   //(set A, B and * other necessary control signals).
-  decoder.getAdressA()
-  decoder.getAdressB()
+	//set alu control signal
+	alu.ctrl = decoder.getAluCtrl();
+	alu.setA(A);
+	alu.setB(B);  
+  /* TODO: implement remaining logic to set up the ALU (set A, B and
+   * other necessary control signals).
+   */
 
   return false;
 }
@@ -125,6 +138,7 @@ Processor::memory(void)
    * obtained using alu.getResult(). For memory-operations, this
    * ALU result is the effective memory address.
    */
+   alu.getResult();
 }
 
 void

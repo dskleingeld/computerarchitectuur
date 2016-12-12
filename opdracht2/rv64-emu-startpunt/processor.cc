@@ -120,7 +120,19 @@ Processor::instructionDecode(void) {
       alu.setA(A);
       alu.setB(B);
       break;
+		case LUI:
+			A = 0;
+			B = decoder.decoded.imm;
 
+			alu.ctrl = INT;
+			alu.setA(A);
+			alu.setB(B);
+		case ADDI:
+			A = 0;
+			B = decoder.decoded.imm;
+			alu.ctrl = INT;
+			alu.setA(A);
+			alu.setB(B);
   }
   return false;
 }
@@ -153,7 +165,7 @@ Processor::memory(void)
    * ALU result is the effective memory address.
    */
   if(decoder.decoded.name == AUIPC){
-    PC = alu.getResult();
+    //PC = alu.getResult();
   }
    alu.getResult();
 }

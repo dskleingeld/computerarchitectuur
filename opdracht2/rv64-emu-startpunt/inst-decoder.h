@@ -14,7 +14,7 @@
 
 /*add enums and constants necessary for your instruction decoder */
 enum AluControl { INT, FLOAT, DIV, NOP};
-enum instructionName { ADDW, AUIPC};
+enum instructionName { ADDW, ADDI, AUIPC, LUI};
 
 /* Exception that should be thrown when an illegal instruction
  * is encountered.
@@ -74,6 +74,7 @@ class InstructionDecoder
   private:
     void decodeUtype(const uint32_t instruction);
 		void decodeRtype(const uint32_t instruction);
+		void decodeItype(const uint32_t instruction);
 };
 
 

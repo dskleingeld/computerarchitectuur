@@ -55,10 +55,33 @@ InstructionDecoder::decodeRtype(const uint32_t instruction)
            <<" funct7: "<<std::bitset<7>(decoded.funct7)<<"\n";
 }
 
+/* decode an Itype instruction */
+void
+InstructionDecoder::decodeItype(const uint32_t instruction)
+{
+	decoded.rd = (uint8_t)selectBits(7, 11, instruction);			//target register
+  decoded.funct3 = (uint8_t)selectBits(12, 14, instruction);
+  decoded.rs1 = (uint8_t)selectBits(15, 19, instruction);
+  decoded.imm = (uint8_t)selectBits(20, 31, instruction);
+
+  std::cout<<"funct3: "<<std::bitset<3>(decoded.funct3);
+}
+
 /* decode an Utype instruction */
 void
 InstructionDecoder::decodeUtype(const uint32_t instruction)
 {
+  decoded.rd = (uint8_t)selectBits(7, 11, instruction);			//target register
+  decoded.imm = (uint8_t)selectBits(12, 31, instruction);
+
+  std::cout<<"rd: "<<std::bitset<4>(decoded.rd)
+           <<" imm: "<<std::bitset<20>(decoded.imm)<<"\n";
+}
+
+/* decode an UJtype instruction */
+void
+InstructionDecoder::decodeUJtype(const uint32_t instruction)
+{ //TODO check imm notation
   decoded.rd = (uint8_t)selectBits(7, 11, instruction);			//target register
   decoded.imm = (uint8_t)selectBits(12, 31, instruction);
 
@@ -78,12 +101,25 @@ InstructionDecoder::decodeInstruction(const uint32_t instruction)
   std::cout << "decoded opcode: "<< std::bitset<7>(decoded.opcode) << "\n";
   //decode the different types
   switch (decoded.opcode){
-    case 0b0010011://R-type
-      decodeRtype(instruction);
-      if (decoded.funct3 == 0){
-        if (decoded.funct7 == 0){
-        }
-      }
+    case 0b0010011://R-type or I-type
+      func3 = selectBits(12,14,instruction);
+			switch(func3){
+				case 0b000:
+					decodeItype(instruction);
+					decoded.name = ADDI;
+				case 0b001:
+					break;
+				case 0b101:
+					break;
+				default:
+					std::cout<<"unknown func3: "<<func3<<"\n";
+					break;
+			}
+			//decodeRtype(instruction);
+      //if (decoded.funct3 == 0){
+      //  if (decoded.funct7 == 0){
+      //  }
+      
       break;
     case 0b0111011://R-type
       decodeRtype(instruction);
@@ -92,23 +128,32 @@ InstructionDecoder::decodeInstruction(const uint32_t instruction)
       }
 
       break;
-    case 0b0011011://R-type
-      func3 = selectBits(12,14, instruction);
-      if (func3 != 000){
-        decodeRtype(instruction);
-      }
-      else{
-        //TODO
-      }
-      break;
+   // case 0b0011011://R-type
+   //   func3 = selectBits(12,14, instruction);
+   //   if (func3 != 000){
+
+   //   decodeRtype(instruction);
+   //   }
+   //   else{
+   //     //TODO
+   //   }
+   //   break;
     case 0b0010111://U-type, AUIPC
       decodeUtype(instruction);
       decoded.imm = decoded.imm << 12;
       decoded.name = AUIPC;
       std::cout<<"decoded imm: "<<std::bitset<32>(decoded.imm);
+			break;
+    case 0b0110111://U-type, LUI
+   		decodeUtype(instruction);
+			decoded.imm = decoded.imm << 12;
+			decoded.name = LUI;
+			break;
+		case ob11o1111://UJ-type, JAL
+			break;
     default:
       std::cout << " ";
-//      std::cout << "unsupported opcode\n";    
+      std::cout << "unsupported opcode\n";    
       break;
   }                
 }

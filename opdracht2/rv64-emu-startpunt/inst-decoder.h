@@ -14,7 +14,7 @@
 
 /*add enums and constants necessary for your instruction decoder */
 enum AluControl { INT, FLOAT, DIV, NOP};
-
+enum instructionName { ADDW, AUIPC};
 
 /* Exception that should be thrown when an illegal instruction
  * is encountered.
@@ -35,6 +35,8 @@ class IllegalInstruction : public std::runtime_error
  */
 struct DecodedInstruction
 {
+  instructionName name;
+
   uint8_t opcode;
   uint8_t rd;
   uint8_t funct3;
@@ -57,17 +59,20 @@ class InstructionDecoder
   public:
     void                decodeInstruction(const uint32_t instruction);
 
+    DecodedInstruction decoded;
+
     DecodedInstruction  getDecodedInstruction(void) const;	
 		AluControl					getAluCtrl(void) const;
     uint8_t             getAdressA() {return decoded.rs1;}
     uint8_t             getAdressB() {return decoded.rs2;}
+    uint8_t             getAdressReturn() {return decoded.rd;}
+    instructionName     getInstructionName() {return decoded.name;}
     
     /* TODO: add methods that the processor class can use to obtain
      * the necessary data from the decoded instruction.
      */
-  private:    
-    DecodedInstruction decoded;
-
+  private:
+    void decodeUtype(const uint32_t instruction);
 		void decodeRtype(const uint32_t instruction);
 };
 

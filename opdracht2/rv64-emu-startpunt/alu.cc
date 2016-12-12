@@ -13,12 +13,13 @@ void
 ALU::execute(void)
 {
   /* TODO: add code to perform operation set on the ALU */
-  std::cout<< "ctrl: "<<ctrl << "\n";
-  std::cout<< "INT: "<<INT << "\n";
+  //std::cout<< "ctrl: "<<ctrl << "\n";
+  //std::cout<< "INT: "<<INT << "\n";
   switch (ctrl){
   	case INT:
   		result = A+B;
-  		std::cout << result << "\n";
+		  //std::cout<<"A: "<<A<<" B: "<<B<<"\n";
+  		//std::cout <<"result: "<<result << "\n";
   		break;
 		case FLOAT:
   		result = A+B;

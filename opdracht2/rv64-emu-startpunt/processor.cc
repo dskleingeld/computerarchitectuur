@@ -78,7 +78,7 @@ void
 Processor::instructionFetch(void)
 {
   instruction = bus.readWord(PC);
-  std::cout << "PC: "<< +PC <<", ";
+  std::cout << "PC: "<< std::hex << PC <<", ";
   PC += 4;
   
 }
@@ -87,27 +87,41 @@ Processor::instructionFetch(void)
  * steps can be skipped.
  */
 bool
-Processor::instructionDecode(void)
-{
+Processor::instructionDecode(void) {
   RegValue A;
   RegValue B;
-  
+  instructionName name;
+
   decoder.decodeInstruction(instruction);
 #ifdef INSTR_DUMP
   std::cerr << decoder.getDecodedInstruction() << std::endl;
 #endif /* INSTR_DUMP */
-  
-  A = regfile.readRegister(decoder.getAdressA());
-  B = regfile.readRegister(decoder.getAdressB());
-  //(set A, B and * other necessary control signals).
-	//set alu control signal
-	alu.ctrl = decoder.getAluCtrl();
-	alu.setA(A);
-	alu.setB(B);  
-  /* TODO: implement remaining logic to set up the ALU (set A, B and
-   * other necessary control signals).
-   */
 
+  name = decoder.getInstructionName();
+  switch(name){
+    case ADDW:
+      //get A and B
+      A = regfile.readRegister(decoder.getAdressA());
+      B = regfile.readRegister(decoder.getAdressB());
+      //std::cout<<"addrA: "<<+decoder.getAdressA();
+      //std::cout<<" addrB: "<<+decoder.getAdressB()<<"\n";
+
+      //(set A, B and * other necessary control signals).
+      //set alu control signal
+      alu.ctrl = INT;
+      alu.setA(A);
+      alu.setB(B);
+      break;
+    case AUIPC:
+      A = (RegValue)PC;
+      B = decoder.decoded.imm;
+
+      alu.ctrl = INT;
+      alu.setA(A);
+      alu.setB(B);
+      break;
+
+  }
   return false;
 }
 
@@ -138,6 +152,9 @@ Processor::memory(void)
    * obtained using alu.getResult(). For memory-operations, this
    * ALU result is the effective memory address.
    */
+  if(decoder.decoded.name == AUIPC){
+    PC = alu.getResult();
+  }
    alu.getResult();
 }
 
@@ -145,7 +162,13 @@ void
 Processor::writeBack(void)
 {
   /* TODO: implement, recall that the current ALU result can be
-   * pbtained using alu.getResult() */
+   * obtained using alu.getResult() */
+  uint8_t returnAddr = decoder.getAdressReturn();
+  RegValue result = alu.getResult();
+
+  //std::cout<<"returnAddr: "<<+returnAddr;
+  //std::cout<<" result: "<<+result;
+  regfile.writeRegister(returnAddr, result);
 }
 
 void

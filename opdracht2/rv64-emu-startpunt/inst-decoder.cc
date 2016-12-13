@@ -50,9 +50,6 @@ InstructionDecoder::decodeRtype(const uint32_t instruction)
   decoded.rs1 = (uint8_t)selectBits(15, 19, instruction);
   decoded.rs2 = (uint8_t)selectBits(20, 24, instruction);
   decoded.funct7 = (uint8_t)selectBits(25, 31, instruction);
-
-  std::cout<<"funct3: "<<std::bitset<3>(decoded.funct3)
-           <<" funct7: "<<std::bitset<7>(decoded.funct7)<<"\n";
 }
 
 /* decode an Itype instruction */
@@ -63,8 +60,6 @@ InstructionDecoder::decodeItype(const uint32_t instruction)
   decoded.funct3 = (uint8_t)selectBits(12, 14, instruction);
   decoded.rs1 = (uint8_t)selectBits(15, 19, instruction);
   decoded.imm = (uint8_t)selectBits(20, 31, instruction);
-
-  std::cout<<"funct3: "<<std::bitset<3>(decoded.funct3);
 }
 
 /* decode an Utype instruction */
@@ -73,6 +68,7 @@ InstructionDecoder::decodeUtype(const uint32_t instruction)
 {
   decoded.rd = (uint8_t)selectBits(7, 11, instruction);			//target register
   decoded.imm = (uint8_t)selectBits(12, 31, instruction);
+	decoded.imm = decoded.imm << 12;
 
   std::cout<<"rd: "<<std::bitset<4>(decoded.rd)
            <<" imm: "<<std::bitset<20>(decoded.imm)<<"\n";
@@ -84,9 +80,30 @@ InstructionDecoder::decodeUJtype(const uint32_t instruction)
 { //TODO check imm notation
   decoded.rd = (uint8_t)selectBits(7, 11, instruction);			//target register
   decoded.imm = (uint8_t)selectBits(12, 31, instruction);
+ 
+  decoded.imm = (decoded.imm & 0b10000000000000000000) | 
+                (decoded.imm & 0b1111111111) << 10     |
+                (decoded.imm & 0b10000000000) << 11    |
+                (decoded.imm & 0b1111111000000000000);
 
-  std::cout<<"rd: "<<std::bitset<4>(decoded.rd)
-           <<" imm: "<<std::bitset<20>(decoded.imm)<<"\n";
+  std::cout<<"Jal imm: "<<decoded.imm<<"\n";
+}
+
+void
+InstructionDecoder::decodeStype(const uint32_t instruction)
+{
+  int immA;
+  int immB;
+  
+  immA = (uint8_t)selectBits(7, 11, instruction);	
+  decoded.funct3 = (uint8_t)selectBits(12, 14, instruction);
+  decoded.rs1 = (uint8_t)selectBits(15, 19, instruction);
+  decoded.rs2 = (uint8_t)selectBits(20, 24, instruction);
+  immB = (uint8_t)selectBits(25, 31, instruction);
+ 
+  decoded.imm = (immA & 0b11111) | 
+                ((immB & 0b00000111111) << 5);
+
 }
 
 /* Decodes a single instruction. The decoded instruction should be
@@ -107,10 +124,11 @@ InstructionDecoder::decodeInstruction(const uint32_t instruction)
 				case 0b000:
 					decodeItype(instruction);
 					decoded.name = ADDI;
-				case 0b001:
 					break;
-				case 0b101:
-					break;
+//				case 0b001:
+//					break;
+//				case 0b101:
+//					break;
 				default:
 					std::cout<<"unknown func3: "<<func3<<"\n";
 					break;
@@ -146,11 +164,21 @@ InstructionDecoder::decodeInstruction(const uint32_t instruction)
 			break;
     case 0b0110111://U-type, LUI
    		decodeUtype(instruction);
-			decoded.imm = decoded.imm << 12;
 			decoded.name = LUI;
 			break;
-		case ob11o1111://UJ-type, JAL
+		case 0b1101111://UJ-type, JAL
+		  decodeUJtype(instruction);
+		  decoded.name = JAL;
 			break;
+		case 0b0100011://S-type
+		  decodeStype(instruction);
+		  switch(decoded.funct3){
+		    case 0b010://SW
+		      decoded.name = SW;
+		      break;
+		  }
+      std::cout<<"func3: "<<+decoded.funct3<<"\n";
+		  break;
     default:
       std::cout << " ";
       std::cout << "unsupported opcode\n";    
@@ -158,10 +186,31 @@ InstructionDecoder::decodeInstruction(const uint32_t instruction)
   }                
 }
 
-DecodedInstruction
+std::string
 InstructionDecoder::getDecodedInstruction(void) const
 {
-  return decoded;
+  std::string name;
+  switch(decoded.name){
+    case ADDW:
+      name == "ADD\n";      
+      break;
+    case ADDI:
+      name == "ADDI\n";      
+      break;  
+    case AUIPC:
+      name == "AUIPC\n";      
+      break;  
+    case LUI:
+      name == "LUI\n";      
+      break;
+    case JAL:
+      name == "JAL\n";      
+      break;
+    case SW:
+      name == "SW\n";      
+      break;
+  }
+  return name;
 }
 
 AluControl

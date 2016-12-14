@@ -80,7 +80,6 @@ Processor::instructionFetch(void)
   instruction = bus.readWord(PC);
   std::cout << "PC: "<< std::hex << PC <<", ";
   PC += 4;
-  
 }
 
 /* Returns whether jump has already occurred during this step and further
@@ -94,7 +93,7 @@ Processor::instructionDecode(void) {
 
   decoder.decodeInstruction(instruction);
 #ifdef INSTR_DUMP
-  std::cerr << decoder.getDecodedInstruction() << std::endl;
+  std::cerr << "instruction: "<<decoder.getDecodedInstruction() << std::endl;
 #endif /* INSTR_DUMP */
 
   name = decoder.getInstructionName();
@@ -103,11 +102,6 @@ Processor::instructionDecode(void) {
       //get A and B
       A = regfile.readRegister(decoder.getAdressA());
       B = regfile.readRegister(decoder.getAdressB());
-      //std::cout<<"addrA: "<<+decoder.getAdressA();
-      //std::cout<<" addrB: "<<+decoder.getAdressB()<<"\n";
-
-      //(set A, B and * other necessary control signals).
-      //set alu control signal
       alu.ctrl = INT;
       alu.setA(A);
       alu.setB(B);
@@ -115,7 +109,6 @@ Processor::instructionDecode(void) {
     case AUIPC:
       A = (RegValue)PC;
       B = decoder.decoded.imm;
-
       alu.ctrl = INT;
       alu.setA(A);
       alu.setB(B);
@@ -123,16 +116,33 @@ Processor::instructionDecode(void) {
 		case LUI:
 			A = 0;
 			B = decoder.decoded.imm;
-
 			alu.ctrl = INT;
 			alu.setA(A);
 			alu.setB(B);
+			break;
 		case ADDI:
 			A = 0;
 			B = decoder.decoded.imm;
 			alu.ctrl = INT;
 			alu.setA(A);
 			alu.setB(B);
+			break;
+		case JAL:
+			A = PC;
+			B = decoder.decoded.imm;
+			alu.ctrl = INT;
+			alu.setA(A);
+			alu.setB(B);
+			return true;
+			break;
+		case SW:
+			A = PC;
+			B = decoder.decoded.imm;
+			alu.ctrl = INT;
+			alu.setA(A);
+			alu.setB(B);
+			return true;
+			break;			
   }
   return false;
 }
@@ -155,6 +165,22 @@ void
 Processor::performStore(uint8_t size, RegValue value, MemAddress addr)
 {
   /* TODO: implement the different store operations */
+  switch(size){
+  	case 1:
+  		bus.writeByte(addr, (uint8_t)value);
+  		break;
+		case 2:
+  		bus.writeHalfWord(addr, (uint16_t)value);
+  		break;		
+		case 4:
+  		bus.writeWord(addr, (uint32_t)value);
+  		break;		  
+		case 8:
+  		bus.writeDoubleWord(addr, (uint64_t)value);
+  		break;		
+		default:
+			break;  
+  }
 }
 
 void
@@ -164,10 +190,12 @@ Processor::memory(void)
    * obtained using alu.getResult(). For memory-operations, this
    * ALU result is the effective memory address.
    */
-  if(decoder.decoded.name == AUIPC){
-    //PC = alu.getResult();
-  }
-   alu.getResult();
+  
+  if(decoder.decoded.name == SW){
+  	MemAddress addr = alu.getResult();
+  	RegValue value = regfile.readRegister(decoder.decoded.rs2);
+  	performStore(4, value, addr);
+  }	
 }
 
 void
@@ -175,12 +203,16 @@ Processor::writeBack(void)
 {
   /* TODO: implement, recall that the current ALU result can be
    * obtained using alu.getResult() */
-  uint8_t returnAddr = decoder.getAdressReturn();
-  RegValue result = alu.getResult();
-
-  //std::cout<<"returnAddr: "<<+returnAddr;
-  //std::cout<<" result: "<<+result;
-  regfile.writeRegister(returnAddr, result);
+  if(decoder.decoded.name != SW){
+  	uint8_t returnAddr = decoder.getAdressReturn();
+  	RegValue result = alu.getResult();
+		regfile.writeRegister(returnAddr, result);
+	}
+	if(decoder.decoded.name == JAL){
+		uint8_t returnAddr = decoder.getAdressReturn();
+		regfile.writeRegister(returnAddr, PC);	
+		PC = alu.getResult();
+	}
 }
 
 void

@@ -14,7 +14,7 @@
 
 /*add enums and constants necessary for your instruction decoder */
 enum AluControl { INT, FLOAT, DIV, NOP};
-enum instructionName { ADDW, AUIPC};
+enum instructionName { ADDW, ADDI, AUIPC, LUI, JAL, SW};
 
 /* Exception that should be thrown when an illegal instruction
  * is encountered.
@@ -61,7 +61,7 @@ class InstructionDecoder
 
     DecodedInstruction decoded;
 
-    DecodedInstruction  getDecodedInstruction(void) const;	
+    std::string         getDecodedInstruction(void) const;	
 		AluControl					getAluCtrl(void) const;
     uint8_t             getAdressA() {return decoded.rs1;}
     uint8_t             getAdressB() {return decoded.rs2;}
@@ -74,6 +74,9 @@ class InstructionDecoder
   private:
     void decodeUtype(const uint32_t instruction);
 		void decodeRtype(const uint32_t instruction);
+		void decodeItype(const uint32_t instruction);
+		void decodeUJtype(const uint32_t instruction);
+		void decodeStype(const uint32_t instruction);
 };
 
 

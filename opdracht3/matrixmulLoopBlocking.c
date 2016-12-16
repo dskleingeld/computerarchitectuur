@@ -90,7 +90,7 @@ multiply2(float C[N][N], const float A[N][N], const float B[N][N])
 		for(int j = 0; j<N; j++)
 			C[i][j] = 0;
 
-	for(int i=0; i< N; i+=blockSize)
+	for(int i=0; i<N; i+=blockSize)
 		for(int j=0; j<N; j+=blockSize)
 			for(int k=0; k<N; k+=blockSize)
 				for (size_t x = i; x < i+blockSize; ++x)

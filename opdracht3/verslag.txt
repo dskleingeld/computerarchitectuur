@@ -1,0 +1,3 @@
+Het aantal cache misses voor matrixmul zonder enige verandering aan het programma
+ is 5 191 795 032. Dit zijn last level cache misses. Dit is op een i7-3770 @ 3.4
+ ghz base clock. However perf is reporting 1600 Mhz. When we halve the size of the matrix from 2048 to 1024 the programm has only 121 280 cache misses. While the matrix now has only 1/4 of the elements this does not explain the speedup. Clearly the size is now so that most of the memory used fits in the cache. 

@@ -5,7 +5,7 @@
 #
 
 CXX = c++
-CXXFLAGS = -std=c++14 -Wall -g
+CXXFLAGS = -std=c++14 -Wall -g -DINSTR_DUMP
 
 
 OBJECTS = \

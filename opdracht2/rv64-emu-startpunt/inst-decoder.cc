@@ -103,7 +103,6 @@ InstructionDecoder::decodeStype(const uint32_t instruction)
  
   decoded.imm = (immA & 0b11111) | 
                 ((immB & 0b00000111111) << 5);
-
 }
 
 /* Decodes a single instruction. The decoded instruction should be

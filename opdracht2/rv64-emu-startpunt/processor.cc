@@ -90,47 +90,59 @@ Processor::instructionDecode(void) {
   RegValue A;
   RegValue B;
   instructionName name;
+  instructionType type;
 
   decoder.decodeInstruction(instruction);
 #ifdef INSTR_DUMP
   std::cerr << "instruction: "<<decoder.getDecodedInstruction() << std::endl;
 #endif /* INSTR_DUMP */
 
+  type = decoder.getInstructionType();
+  switch(type){
+    case R:
+      A = regfile.readRegister(decoder.getAdressA());
+      B = regfile.readRegister(decoder.getAdressB());
+      alu.setA(A);
+      alu.setB(B);
+      alu.ctrl = decoder.getAluCtrl();
+  }
+
   name = decoder.getInstructionName();
   switch(name){
+    case ADD:
     case ADDW:
       //get A and B
       A = regfile.readRegister(decoder.getAdressA());
       B = regfile.readRegister(decoder.getAdressB());
-      alu.ctrl = INT;
+      alu.ctrl = decoder.getAluCtrl();
       alu.setA(A);
       alu.setB(B);
       break;
     case AUIPC:
       A = (RegValue)PC;
       B = decoder.decoded.imm;
-      alu.ctrl = INT;
+      alu.ctrl = decoder.getAluCtrl();
       alu.setA(A);
       alu.setB(B);
       break;
 		case LUI:
 			A = 0;
 			B = decoder.decoded.imm;
-			alu.ctrl = INT;
+      alu.ctrl = decoder.getAluCtrl();
 			alu.setA(A);
 			alu.setB(B);
 			break;
 		case ADDI:
 			A = 0;
 			B = decoder.decoded.imm;
-			alu.ctrl = INT;
+      alu.ctrl = decoder.getAluCtrl();
 			alu.setA(A);
 			alu.setB(B);
 			break;
 		case JAL:
 			A = PC;
 			B = decoder.decoded.imm;
-			alu.ctrl = INT;
+      alu.ctrl = decoder.getAluCtrl();
 			alu.setA(A);
 			alu.setB(B);
 			return true;
@@ -138,11 +150,11 @@ Processor::instructionDecode(void) {
 		case SW:
 			A = PC;
 			B = decoder.decoded.imm;
-			alu.ctrl = INT;
+      alu.ctrl = decoder.getAluCtrl();
 			alu.setA(A);
 			alu.setB(B);
 			return true;
-			break;			
+			break;
   }
   return false;
 }
@@ -156,9 +168,26 @@ Processor::execute(void)
 uint64_t
 Processor::performLoad(uint8_t size, bool signExtend, MemAddress addr)
 {
+  uint64_t value;
   /* TODO: implement the different load operations */
-
-  return 0;
+  switch(size){
+  	case 1:
+  		value = (uint64_t)bus.readByte(addr);
+  		break;
+		case 2:
+  		value = (uint64_t)bus.readHalfWord(addr);
+  		break;
+		case 4:
+  		value = (uint64_t)bus.readWord(addr);
+  		break;
+		case 8:
+  		value = (uint64_t)bus.readDoubleWord(addr);
+  		break;
+		default:
+      value = 0;
+      break;
+  }
+  return value;
 }
 
 void
@@ -171,15 +200,15 @@ Processor::performStore(uint8_t size, RegValue value, MemAddress addr)
   		break;
 		case 2:
   		bus.writeHalfWord(addr, (uint16_t)value);
-  		break;		
+  		break;
 		case 4:
   		bus.writeWord(addr, (uint32_t)value);
-  		break;		  
+  		break;
 		case 8:
   		bus.writeDoubleWord(addr, (uint64_t)value);
-  		break;		
+  		break;
 		default:
-			break;  
+			break;
   }
 }
 
@@ -190,12 +219,12 @@ Processor::memory(void)
    * obtained using alu.getResult(). For memory-operations, this
    * ALU result is the effective memory address.
    */
-  
+
   if(decoder.decoded.name == SW){
   	MemAddress addr = alu.getResult();
   	RegValue value = regfile.readRegister(decoder.decoded.rs2);
   	performStore(4, value, addr);
-  }	
+  }
 }
 
 void
@@ -210,7 +239,7 @@ Processor::writeBack(void)
 	}
 	if(decoder.decoded.name == JAL){
 		uint8_t returnAddr = decoder.getAdressReturn();
-		regfile.writeRegister(returnAddr, PC);	
+		regfile.writeRegister(returnAddr, PC);
 		PC = alu.getResult();
 	}
 }

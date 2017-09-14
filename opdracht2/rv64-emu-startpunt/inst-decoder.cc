@@ -20,15 +20,15 @@
  */
 
 /* select bits including start and stop and return */
-uint32_t 
+uint32_t
 selectBits(uint8_t start, uint8_t stop, const uint32_t instruction){
 //
-  
-  uint32_t selection; 
+
+  uint32_t selection;
   int mask;
-  
+
   selection = instruction >> start; //shift bits we want to the lowest position
-  //create a mask by shifting ~0 (is all 1) the number of bits we want to the 
+  //create a mask by shifting ~0 (is all 1) the number of bits we want to the
   //left and then inverting so we get all 0 everywhere except the part we want to keep
   mask = ~(~0 << (stop-start+1));      //(~ is the bitwise NOT operator)
 
@@ -80,8 +80,8 @@ InstructionDecoder::decodeUJtype(const uint32_t instruction)
 { //TODO check imm notation
   decoded.rd = (uint8_t)selectBits(7, 11, instruction);			//target register
   decoded.imm = (uint8_t)selectBits(12, 31, instruction);
- 
-  decoded.imm = (decoded.imm & 0b10000000000000000000) | 
+
+  decoded.imm = (decoded.imm & 0b10000000000000000000) |
                 (decoded.imm & 0b1111111111) << 10     |
                 (decoded.imm & 0b10000000000) << 11    |
                 (decoded.imm & 0b1111111000000000000);
@@ -94,14 +94,14 @@ InstructionDecoder::decodeStype(const uint32_t instruction)
 {
   int immA;
   int immB;
-  
-  immA = (uint8_t)selectBits(7, 11, instruction);	
+
+  immA = (uint8_t)selectBits(7, 11, instruction);
   decoded.funct3 = (uint8_t)selectBits(12, 14, instruction);
   decoded.rs1 = (uint8_t)selectBits(15, 19, instruction);
   decoded.rs2 = (uint8_t)selectBits(20, 24, instruction);
   immB = (uint8_t)selectBits(25, 31, instruction);
- 
-  decoded.imm = (immA & 0b11111) | 
+
+  decoded.imm = (immA & 0b11111) |
                 ((immB & 0b00000111111) << 5);
 }
 
@@ -112,7 +112,7 @@ void
 InstructionDecoder::decodeInstruction(const uint32_t instruction)
 {
   int func3;
-  
+
   decoded.opcode = (uint8_t)selectBits(0,6, instruction);
   std::cout << "decoded opcode: "<< std::bitset<7>(decoded.opcode) << "\n";
   //decode the different types
@@ -124,37 +124,16 @@ InstructionDecoder::decodeInstruction(const uint32_t instruction)
 					decodeItype(instruction);
 					decoded.name = ADDI;
 					break;
-//				case 0b001:
-//					break;
-//				case 0b101:
-//					break;
 				default:
 					std::cout<<"unknown func3: "<<func3<<"\n";
 					break;
 			}
-			//decodeRtype(instruction);
-      //if (decoded.funct3 == 0){
-      //  if (decoded.funct7 == 0){
-      //  }
-      
       break;
     case 0b0111011://R-type
       decodeRtype(instruction);
-      if(decoded.funct7 == 0){//ADDW
+      if(decoded.funct7 == 0)//ADDW
         decoded.name = ADDW;
-      }
-
       break;
-   // case 0b0011011://R-type
-   //   func3 = selectBits(12,14, instruction);
-   //   if (func3 != 000){
-
-   //   decodeRtype(instruction);
-   //   }
-   //   else{
-   //     //TODO
-   //   }
-   //   break;
     case 0b0010111://U-type, AUIPC
       decodeUtype(instruction);
       decoded.imm = decoded.imm << 12;
@@ -175,14 +154,17 @@ InstructionDecoder::decodeInstruction(const uint32_t instruction)
 		    case 0b010://SW
 		      decoded.name = SW;
 		      break;
+        case 0b011://SD
+          decoded.name = SD;
+          break;
 		  }
       std::cout<<"func3: "<<+decoded.funct3<<"\n";
 		  break;
     default:
       std::cout << " ";
-      std::cout << "unsupported opcode\n";    
+      std::cout << "unsupported opcode\n";
       break;
-  }                
+  }
 }
 
 std::string
@@ -191,22 +173,22 @@ InstructionDecoder::getDecodedInstruction(void) const
   std::string name;
   switch(decoded.name){
     case ADDW:
-      name == "ADD\n";      
+      name = "ADDW";
       break;
     case ADDI:
-      name == "ADDI\n";      
-      break;  
+      name = "ADDI";
+      break;
     case AUIPC:
-      name == "AUIPC\n";      
-      break;  
+      name = "AUIPC";
+      break;
     case LUI:
-      name == "LUI\n";      
+      name = "LUI";
       break;
     case JAL:
-      name == "JAL\n";      
+      name = "JAL";
       break;
     case SW:
-      name == "SW\n";      
+      name = "SW";
       break;
   }
   return name;

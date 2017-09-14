@@ -16,20 +16,21 @@ ALU::execute(void)
   //std::cout<< "ctrl: "<<ctrl << "\n";
   //std::cout<< "INT: "<<INT << "\n";
   switch (ctrl){
-  	case INT:
+  	case opADD:
   		result = A+B;
-		  //std::cout<<"A: "<<A<<" B: "<<B<<"\n";
-  		//std::cout <<"result: "<<result << "\n";
+		  std::cout<<"A: "<<A<<" B: "<<B<<"\n";
+  		std::cout <<"result: "<<result << "\n";
   		break;
-		case FLOAT:
-  		result = A+B;
+		case opSUB:
+  		result = A-B;
 			break;
-		case DIV:
+		case opSHIFT:
   		result = A/B;
 			break;
-		case NOP:
+		case opNOP:
 			break;
 		default:
 			break;
-	}		
+	}
+  A = B = 0;
 }

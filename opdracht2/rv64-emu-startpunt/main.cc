@@ -25,6 +25,7 @@ showHelp(const char *progName)
 R"HERE(
     Where 'reginit' is a register initializer in the form
     rX=Y with X a register number and Y the initializer value.
+    for example '-r r1=1' (here 'r1' is the reg number)
 )HERE";
 }
 
@@ -36,6 +37,8 @@ parseRegisterInit(std::string option,
 {
   std::regex init_regex("r([0-9]{1,2})=([0-9]+)");
   std::smatch match;
+
+  std::cout<<option<<"\n";
 
   if (std::regex_match(option, match, init_regex))
     {

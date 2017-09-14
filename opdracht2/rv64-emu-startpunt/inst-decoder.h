@@ -13,8 +13,9 @@
 #include "reg-file.h" //added
 
 /*add enums and constants necessary for your instruction decoder */
-enum AluControl { INT, FLOAT, DIV, NOP};
-enum instructionName { ADDW, ADDI, AUIPC, LUI, JAL, SW};
+enum AluControl { opADD, opSUB, opSHIFT, opNOP};
+enum instructionName { ADDW, ADD, ADDI, AUIPC, LUI, JAL, SW, SD};
+enum instructionType { R, I};
 
 /* Exception that should be thrown when an illegal instruction
  * is encountered.
@@ -36,6 +37,7 @@ class IllegalInstruction : public std::runtime_error
 struct DecodedInstruction
 {
   instructionName name;
+  instructionType type;
 
   uint8_t opcode;
   uint8_t rd;
@@ -43,9 +45,9 @@ struct DecodedInstruction
   uint8_t rs1;
   uint8_t rs2;
   uint8_t funct7;
-   
+
   uint32_t imm;
-  
+
   AluControl ctrl;
   /* TODO: fill with data instruction data: opcode, register numbers, etc... */
 };
@@ -61,13 +63,14 @@ class InstructionDecoder
 
     DecodedInstruction decoded;
 
-    std::string         getDecodedInstruction(void) const;	
+    std::string         getDecodedInstruction(void) const;
 		AluControl					getAluCtrl(void) const;
     uint8_t             getAdressA() {return decoded.rs1;}
     uint8_t             getAdressB() {return decoded.rs2;}
     uint8_t             getAdressReturn() {return decoded.rd;}
     instructionName     getInstructionName() {return decoded.name;}
-    
+    instructionType     getInstructionType() {return decoded.type;}
+
     /* TODO: add methods that the processor class can use to obtain
      * the necessary data from the decoded instruction.
      */

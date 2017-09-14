@@ -10,3 +10,10 @@ minicrt-riscv.s. To build "hello.c"
 And to build all other programs:
 
   ./riscv-cc -o $(program).bin $(program).c roman.c minicrt-riscv.s
+
+
+
+
+
+gcc crosscompiler: /usr/local/bin/riscv/bin/riscv64-unknown-linux-gnu-gcc
+

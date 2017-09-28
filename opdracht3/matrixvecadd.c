@@ -144,16 +144,19 @@ main(int argc, char **argv)
   matrix_init_random(A);
   vector_init_counting(b);
 
-	//matrix_copy(B, A);
-	//add_vec(A, b);
-	//add_vec3(B, b);
+	add_vec(A, b);
+	matrix_copy(B, A);
+
+
 	
 	//if(matrix_equal(A,B)){printf("equal");}
 	
   /* Repeat the experiment 1000 times to get stable measurements. */
   for (int i = 0; i < 1000; ++i)
-    add_vec3(A, b);
-		
+    //add_vec3(A, b);
+	  //add_vec(A, b);
+		add_vec2(A, b);
+	//add_vec3(B, b);		
 
   _mm_free(A);
   _mm_free(b);
